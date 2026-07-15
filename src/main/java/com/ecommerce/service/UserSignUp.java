@@ -9,6 +9,8 @@ public class UserSignUp {
 	public void signUp(String name, String email, String password, String role) throws SQLException {
 
 		try {
+			
+//			testing
 			UserDao userDao = new UserDao();
 			userDao.getUserConnection();
 			userDao.userPreparedStatement.setString(1, name);
