@@ -2,19 +2,28 @@ package com.ecommerce.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 import com.ecommerce.config.DBconfig;
 import com.ecommerce.constants.CustomerQueries;
 
 public class UserDao {
-	public static PreparedStatement userPreparedStatement;
-	static CustomerQueries customerQueries = new CustomerQueries();
 
-	public void getUserConnection() throws SQLException {
-		DBconfig dbConfig = new DBconfig();
-		Connection connection = dbConfig.getConnection();
+    public boolean signUp(String username, String email, String password, String role) {
+        String query = CustomerQueries.USER_SIGNUP_QUERY;
 
-		userPreparedStatement = connection.prepareStatement(customerQueries.userSignUpQuery);
-	}
+        try (Connection connection = DBconfig.getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(query)) {
+
+            pstmt.setString(1, username);
+            pstmt.setString(2, email);
+            pstmt.setString(3, password);
+            pstmt.setString(4, role);
+
+            int rows = pstmt.executeUpdate();
+            return rows > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

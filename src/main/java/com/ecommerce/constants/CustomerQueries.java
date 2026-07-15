@@ -2,8 +2,9 @@ package com.ecommerce.constants;
 
 public class CustomerQueries {
 
-	public String userSignUpQuery = "INSERT INTO User(user_id, username, email, password, created_at, role) values(?,?,?,?,?,?)";
+    public static final String USER_SIGNUP_QUERY = 
+        "INSERT INTO User(username, email, password, role) VALUES(?,?,?,?)";
 
-	public String userLoginQuery = "SELECT * FROM User";
-
+    public static final String USER_LOGIN_QUERY = 
+        "SELECT * FROM User WHERE email = ? AND password = ?";
 }

@@ -1,14 +1,23 @@
 package com.ecommerce.main;
 
-import java.sql.Connection;
+import com.ecommerce.service.UserSignUp;
 
-import com.ecommerce.config.DBconfig;
+public class App {
+    public static void main(String[] args) {
 
-public class App 
-{
-    public static void main( String[] args )
-    {
-        System.out.println( "Hello World!" );
-        Connection con = DBconfig.getConnection();
+        UserSignUp userSignUp = new UserSignUp();
+
+        boolean isRegistered = userSignUp.signUp(
+                "kodewala", 
+                "kodewala@gmail.com", 
+                "kode@123", 
+                "customer"
+        );
+
+        if (isRegistered) {
+            System.out.println("Signup Successful!");
+        } else {
+            System.out.println("Signup Failed!");
+        }
     }
 }
