@@ -1,6 +1,15 @@
 package com.ecommerce.service;
 
-public class ProductService
-{
+import java.util.List;
+
+import com.ecommerce.model.Product;
+
+public interface ProductService {
+
+    List<Product> viewAvailableProducts();
+
+    Product displayProductDetails(long productId);
+
+    int showAvailableStock(long productId);
 
 }
