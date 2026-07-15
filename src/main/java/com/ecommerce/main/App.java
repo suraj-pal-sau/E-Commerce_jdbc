@@ -1,14 +1,13 @@
 package com.ecommerce.main;
 
-import java.sql.Connection;
+import com.ecommerce.ui.ConsoleMenu;
 
-import com.ecommerce.config.DBconfig;
-
-public class App 
+public class App
 {
-    public static void main( String[] args )
-    {
-        System.out.println( "Hello World!" );
-        Connection con = DBconfig.getConnection();
-    }
+	public static void main(String[] args) {
+		
+		ConsoleMenu system = new ConsoleMenu();
+		system.start();
+		
+	}
 }
