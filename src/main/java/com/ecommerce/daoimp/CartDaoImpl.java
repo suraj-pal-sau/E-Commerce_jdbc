@@ -26,15 +26,13 @@ public class CartDaoImpl implements CartDao {
 			ResultSet result = preparedStatement.executeQuery();
 
 			return result.next();
-		}
-		catch (SQLException e) {
+		} catch (SQLException e) {
 			System.err.println("Error from findCustomerByIdFromCart DAO: " + e.getMessage());
 		}
 
 		return false;
 	}
-	
-	
+
 	@Override
 	public void addProductIntoCartDB(int customer_id, int product_id, int quantity) {
 
@@ -53,7 +51,7 @@ public class CartDaoImpl implements CartDao {
 				System.out.println("Product Added Successfully in Cart");
 				connection.commit();
 			} else {
-				System.err.println("Product is not Added to Cart. Please Try Again...");
+				System.err.println("Failed to add product to Cart. Please try again.");
 				connection.rollback();
 			}
 
@@ -62,8 +60,7 @@ public class CartDaoImpl implements CartDao {
 			try {
 				connection.rollback();
 			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				System.err.println("Error from addProductIntoCartDB for Rollback: " + e.getMessage());
 			}
 		}
 	}
@@ -81,20 +78,19 @@ public class CartDaoImpl implements CartDao {
 			int recordUpdated = preparedStatement.executeUpdate();
 
 			if (recordUpdated > 0) {
-				System.out.println("Product Added Successfully in Cart");
+				System.out.println("Product Removed Successfully from Cart");
 				connection.commit();
 			} else {
-				System.err.println("Product is not Added to Cart. Please Try Again...");
+				System.err.println("Product not found in your Cart. Nothing was removed");
 				connection.rollback();
 			}
 
-		} catch(SQLException e) {
-			System.err.println("Error from addProductIntoCartDB: " + e.getMessage());
+		} catch (SQLException e) {
+			System.err.println("Error from removeProductFromCartDB: " + e.getMessage());
 			try {
 				connection.rollback();
 			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				System.err.println("Error from removeProductFromCartDB for Rollback: " + e.getMessage());
 			}
 		}
 	}
@@ -104,13 +100,13 @@ public class CartDaoImpl implements CartDao {
 
 		try {
 
-			PreparedStatement preparedStatment = connection.prepareStatement(CartQueries.SEARCH_ALL_CART_PROUDCTS_BY_CUSTOMER_ID);
+			PreparedStatement preparedStatment = connection
+					.prepareStatement(CartQueries.SEARCH_ALL_CART_PROUDCTS_BY_CUSTOMER_ID);
 			preparedStatment.setInt(1, customer_id);
-			
 
 			ResultSet result = preparedStatment.executeQuery();
 
-			while(result.next()) {
+			while (result.next()) {
 
 				int cust_id = result.getInt(1);
 				int product_id = result.getInt(2);
@@ -122,14 +118,14 @@ public class CartDaoImpl implements CartDao {
 				System.out.println("\n========== CART PRODUCT DETAILS ==========\n");
 
 				System.out.println("Cust ID      : " + cust_id);
-				System.out.println("Poduct ID       : " + product_id);
+				System.out.println("Product ID       : " + product_id);
 				System.out.println("Product Name    : " + product_name);
 				System.out.println("Description     : " + product_desc);
 				System.out.println("Category        : " + product_category);
 				System.out.println("Price           : ₹" + product_price);
 			}
 		} catch (SQLException e) {
-			System.err.println("Error from addProductIntoCartDB: " + e.getMessage());
+			System.err.println("Error from searchAllCartProduct: " + e.getMessage());
 		}
 	}
 }
