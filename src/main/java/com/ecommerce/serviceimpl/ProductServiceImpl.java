@@ -35,5 +35,11 @@ public class ProductServiceImpl implements ProductService
         return productDao.showAvailableStock(productId);
     }
     
+    @Override
+    public boolean reduceProductStock(long productId, int quantity) {
+
+        return productDao.reduceProductStock(productId, quantity);
+    }
+    
 
 }

@@ -17,5 +17,9 @@ public class ProductQueries {
     // 3. Show stock quantity of a product
     public static final String SHOW_AVAILABLE_STOCK =
             "SELECT stock_quantity FROM product WHERE product_id = ?";
+    
+    //4. Reducing stock quantity after order confirmation
+    public static final String REDUCE_PRODUCT_STOCK =
+            "UPDATE product SET stock_quantity = stock_quantity - ? WHERE product_id = ?";
 
 }

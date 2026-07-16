@@ -11,5 +11,7 @@ public interface ProductService {
     Product displayProductDetails(long productId);
 
     int showAvailableStock(long productId);
+    
+    public boolean reduceProductStock(long productId, int quantity);
 
 }

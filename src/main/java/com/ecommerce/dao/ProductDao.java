@@ -10,5 +10,7 @@ public interface ProductDao {
     Product displayProductDetails(long productId);
 
     int showAvailableStock(long productId);
+    
+    boolean reduceProductStock(long productId, int quantity);
 
 }

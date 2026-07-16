@@ -132,5 +132,32 @@ public class ProductDaoImp implements ProductDao {
 
         return stockQuantity;
     }
+    
+    @Override
+    public boolean reduceProductStock(long productId, int quantity) {
+
+        try {
+
+            Connection connection = DBconfig.getConnection();
+
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(ProductQueries.REDUCE_PRODUCT_STOCK);
+
+            preparedStatement.setInt(1, quantity);
+            preparedStatement.setLong(2, productId);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            preparedStatement.close();
+
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 
 }
