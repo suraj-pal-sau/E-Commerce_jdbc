@@ -37,8 +37,9 @@ public class OrderConsoleUI {
                 	System.out.println("Track your Order using OrderID: " + orderId);
                     break;
                 case 2:
-                    System.out.println("\n--- PREVIOUS ORDERS FOR CUSTOMER " + loggedInCustomerId + " ---");
-                    break;
+//                    System.out.println("\n--- PREVIOUS ORDERS FOR CUSTOMER " + loggedInCustomerId + " ---");
+                    orderService.viewOrderHistory(loggedInCustomerId);
+                	break;
                 default:
                     System.out.println("Invalid option.");
             }

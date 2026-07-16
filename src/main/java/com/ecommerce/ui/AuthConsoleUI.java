@@ -59,12 +59,6 @@ public class AuthConsoleUI {
 		UserLogin userLogin = new UserLogin();
 		seller = userLogin.logIn(email, password);
 
-		System.out.println(seller);
-		
-		// int inputId = getIntInput();
-
-		 // boolean exists = userService.validateUserExists(inputId);
-
 		if (!Objects.isNull(seller)) {
 			System.out.println("✔ Login Successful! Welcome back.");
 			return seller;
@@ -72,7 +66,7 @@ public class AuthConsoleUI {
 			System.out.println("❌ Invalid Customer ID. Please enter a positive number.");
 			return null;
 		}
-		
+
 	}
 
 	private void handleRegistration() {
@@ -91,14 +85,10 @@ public class AuthConsoleUI {
 		System.out.print("Enter Role: ");
 		String role = scanner.nextLine();
 
-		// TODO: Call your actual database save logic later:
-		// int newId = userService.registerCustomer(name, email, password);
 		UserSignUp user = new UserSignUp();
 		user.signUp(name, email, password, role);
 
 		System.out.println("\n✔ Account Created Successfully!");
-		//        System.out.println("👉 Your assigned Customer ID is: " + simulatedId);
-		//        System.out.println("Please use this Customer ID to Log In.");
 	}
 
 	private int getIntInput() {

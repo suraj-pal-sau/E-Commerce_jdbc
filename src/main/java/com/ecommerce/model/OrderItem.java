@@ -70,4 +70,13 @@ public class OrderItem {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+	@Override
+	public String toString() {
+		return "OrderItem [orderItemId=" + orderItemId + ", orderId=" + orderId + ", productId=" + productId
+				+ ", quantity=" + quantity + ", price=" + price + ", subtotal=" + subtotal + ", createdAt=" + createdAt
+				+ "]";
+	}
+    
+    
 }

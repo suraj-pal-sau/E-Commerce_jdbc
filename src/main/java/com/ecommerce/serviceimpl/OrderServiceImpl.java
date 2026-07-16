@@ -19,225 +19,250 @@ import com.ecommerce.service.ProductService;
 
 public class OrderServiceImpl implements OrderService {
 
-    private OrderDao orderDao = new OrderDaoImp();
+	private OrderDao orderDao = new OrderDaoImp();
 
-    private ProductService productService = new ProductServiceImpl();
+	private ProductService productService = new ProductServiceImpl();
 
-    private CartService cartService = new CartServiceImpl();
-    
-    @Override
-    public long placeOrder(long userId) {
+	private CartService cartService = new CartServiceImpl();
 
-        // Step 1: Get Cart Items
-        List<CartItem> cartItems = cartService.getCartItems(userId);
+	@Override
+	public long placeOrder(long userId) {
 
-        // Step 2: Check Empty Cart
-        if (cartItems.isEmpty()) {
-            throw new EmptyCartException("Cart is empty. Cannot place order.");
-        }
+		// Step 1: Get Cart Items
+		List<CartItem> cartItems = cartService.getCartItems(userId);
 
-        double totalAmount = 0.0;
+		// Step 2: Check Empty Cart
+		if (cartItems.isEmpty()) {
+			throw new EmptyCartException("Cart is empty. Cannot place order.");
+		}
 
-        Map<Long, Product> productMap = new HashMap<>();
+		double totalAmount = 0.0;
 
-        // Step 3: Validate Stock & Calculate Total
-        for (CartItem cartItem : cartItems) {
+		Map<Long, Product> productMap = new HashMap<>();
 
-            Product product = productService.displayProductDetails(cartItem.getProductId());
+		// Step 3: Validate Stock & Calculate Total
+		for (CartItem cartItem : cartItems) {
 
-            if (product == null) {
-                throw new RuntimeException("Product not found.");
-            }
+			Product product = productService.displayProductDetails(cartItem.getProductId());
 
-            productMap.put(product.getProductId(), product);
+			if (product == null) {
+				throw new RuntimeException("Product not found.");
+			}
 
-            if (product.getStockQuantity() < cartItem.getQuantity()) {
-                throw new InsufficientStockException(
-                        "Insufficient stock for " + product.getProductName());
-            }
+			productMap.put(product.getProductId(), product);
 
-            // Calculate subtotal
-            double subtotal = product.getPrice() * cartItem.getQuantity();
+			if (product.getStockQuantity() < cartItem.getQuantity()) {
+				throw new InsufficientStockException(
+						"Insufficient stock for " + product.getProductName());
+			}
 
-            // Add to total amount
-            totalAmount += subtotal;
-        }
+			// Calculate subtotal
+			double subtotal = product.getPrice() * cartItem.getQuantity();
 
-        // Step 4: Create Order
-        Order order = new Order();
+			// Add to total amount
+			totalAmount += subtotal;
+		}
 
-        order.setUserId(userId);
-        order.setTotalAmount(totalAmount);
+		// Step 4: Create Order
+		Order order = new Order();
 
-        long orderId = orderDao.createOrder(order);
+		order.setUserId(userId);
+		order.setTotalAmount(totalAmount);
 
-        if (orderId == -1) {
-            throw new RuntimeException("Unable to create order.");
-        }
+		long orderId = orderDao.createOrder(order);
 
-        // Step 5: Create Order Items & Reduce Stock
-        for (CartItem cartItem : cartItems) {
+		if (orderId == -1) {
+			throw new RuntimeException("Unable to create order.");
+		}
 
-            Product product = productMap.get(cartItem.getProductId());
+		// Step 5: Create Order Items & Reduce Stock
+		for (CartItem cartItem : cartItems) {
 
-            OrderItem orderItem = new OrderItem();
+			Product product = productMap.get(cartItem.getProductId());
 
-            orderItem.setOrderId(orderId);
-            orderItem.setProductId(cartItem.getProductId());
-            orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setPrice(product.getPrice());
+			OrderItem orderItem = new OrderItem();
 
-            // Calculate subtotal
-            double subtotal = product.getPrice() * cartItem.getQuantity();
+			orderItem.setOrderId(orderId);
+			orderItem.setProductId(cartItem.getProductId());
+			orderItem.setQuantity(cartItem.getQuantity());
+			orderItem.setPrice(product.getPrice());
 
-            orderItem.setSubtotal(subtotal);
+			// Calculate subtotal
+			double subtotal = product.getPrice() * cartItem.getQuantity();
 
-            boolean itemCreated = orderDao.createOrderItem(orderItem);
+			orderItem.setSubtotal(subtotal);
+			
+			System.out.println(orderItem);
 
-            if (!itemCreated) {
-                throw new RuntimeException("Unable to create order item.");
-            }
+			boolean itemCreated = orderDao.createOrderItem(orderItem);
 
-            // Reduce Product Stock
-            productService.reduceProductStock(
-                    cartItem.getProductId(),
-                    cartItem.getQuantity());
-        }
+			if (!itemCreated) {
+				throw new RuntimeException("Unable to create order item.");
+			}
 
-        // Step 6: Clear Cart
-        cartService.clearCart(userId);
+			// Reduce Product Stock
+			productService.reduceProductStock(
+					cartItem.getProductId(),
+					cartItem.getQuantity());
+		}
 
-        // Step 7: Return Order Id
-        return orderId;
-    }
-    
-    @Override
-    public Order getOrderById(long orderId) {
+		// Step 6: Clear Cart
+		cartService.clearCart(userId);
 
-        if (orderId <= 0) {
-            throw new IllegalArgumentException("Invalid Order ID.");
-        }
+		// Step 7: Return Order Id
+		return orderId;
+	}
 
-        Order order = orderDao.getOrderById(orderId);
+	@Override
+	public Order getOrderById(long orderId) {
 
-        if (order == null) {
-            throw new OrderNotFoundException(
-                    "Order not found with ID : " + orderId);
-        }
+		try {
 
-        return order;
-    }
-    
-    @Override
-    public List<Order> getOrdersByUserId(long userId) {
+			if (orderId <= 0) {
+				throw new IllegalArgumentException("Invalid Order ID.");
+			}
 
-        if (userId <= 0) {
-            throw new IllegalArgumentException("Invalid User ID.");
-        }
+			Order order = orderDao.getOrderById(orderId);
 
-        List<Order> orders = orderDao.getOrdersByUserId(userId);
+			if (order == null) {
+				throw new OrderNotFoundException(
+						"Order not found with ID : " + orderId);
+			}
 
-        return orders;
-    }
-    
-    @Override
-    public List<OrderItem> getOrderItems(long orderId) {
 
-        // Step 1 : Validate Order ID
-        if (orderId <= 0) {
-            throw new IllegalArgumentException("Invalid Order ID.");
-        }
+			return order;
+		} catch(IllegalArgumentException | OrderNotFoundException e) {
+			System.err.println(e.getMessage());
+		}
 
-        // Step 2 : Check Order Exists
-        Order order = orderDao.getOrderById(orderId);
+		return null;
+	}
 
-        if (order == null) {
-            throw new OrderNotFoundException(
-                    "Order not found with ID : " + orderId);
-        }
+	@Override
+	public List<Order> getOrdersByUserId(long userId) {
 
-        // Step 3 : Fetch Order Items
-        List<OrderItem> orderItems = orderDao.getOrderItems(orderId);
+		try {
 
-        return orderItems;
-    }
-    
-    @Override
-    public boolean updateOrderStatus(long orderId, String status) {
+			if (userId <= 0) {
+				throw new IllegalArgumentException("Invalid User ID.");
+			}
 
-        // Step 1 : Validate Order ID
-        if (orderId <= 0) {
-            throw new IllegalArgumentException("Invalid Order ID.");
-        }
+			List<Order> orders = orderDao.getOrdersByUserId(userId);
 
-        // Step 2 : Validate Status
-        if (status == null || status.trim().isEmpty()) {
-            throw new IllegalArgumentException("Order status cannot be empty.");
-        }
+			return orders;
+		} catch(IllegalArgumentException e) {
+			System.err.println(e.getMessage());
+		}
 
-        status = status.toUpperCase();
+		return null;
+	}
 
-        if (!status.equals("PLACED")
-                && !status.equals("CONFIRMED")
-                && !status.equals("SHIPPED")
-                && !status.equals("DELIVERED")
-                && !status.equals("CANCELLED")) {
+	@Override
+	public List<OrderItem> getOrderItems(long orderId) {
 
-            throw new IllegalArgumentException("Invalid Order Status.");
-        }
+		// Step 1 : Validate Order ID
+		if (orderId <= 0) {
+			throw new IllegalArgumentException("Invalid Order ID.");
+		}
 
-        // Step 3 : Check Order Exists
-        Order order = orderDao.getOrderById(orderId);
+		// Step 2 : Check Order Exists
+		Order order = orderDao.getOrderById(orderId);
 
-        if (order == null) {
-            throw new OrderNotFoundException(
-                    "Order not found with ID : " + orderId);
-        }
+		if (order == null) {
+			throw new OrderNotFoundException(
+					"Order not found with ID : " + orderId);
+		}
 
-        // Step 4 : Update Status
-        return orderDao.updateOrderStatus(orderId, status);
-    }
-    
-    @Override
-    public boolean cancelOrder(long orderId, long userId) {
+		// Step 3 : Fetch Order Items
+		List<OrderItem> orderItems = orderDao.getOrderItems(orderId);
 
-        // Step 1 : Validate Order ID
-        if (orderId <= 0) {
-            throw new IllegalArgumentException("Invalid Order ID.");
-        }
+		return orderItems;
+	}
 
-        // Step 2 : Validate User ID
-        if (userId <= 0) {
-            throw new IllegalArgumentException("Invalid User ID.");
-        }
+	@Override
+	public boolean updateOrderStatus(long orderId, String status) {
 
-        // Step 3 : Check Order Exists
-        Order order = orderDao.getOrderById(orderId);
+		// Step 1 : Validate Order ID
+		if (orderId <= 0) {
+			throw new IllegalArgumentException("Invalid Order ID.");
+		}
 
-        if (order == null) {
-            throw new OrderNotFoundException(
-                    "Order not found with ID : " + orderId);
-        }
+		// Step 2 : Validate Status
+		if (status == null || status.trim().isEmpty()) {
+			throw new IllegalArgumentException("Order status cannot be empty.");
+		}
 
-        // Step 4 : Verify Order Owner
-        if (order.getUserId() != userId) {
-            throw new IllegalArgumentException(
-                    "You are not authorized to cancel this order.");
-        }
+		status = status.toUpperCase();
 
-        // Step 5 : Validate Status
-        if (order.getStatus().equalsIgnoreCase("DELIVERED")) {
-            throw new IllegalStateException(
-                    "Delivered orders cannot be cancelled.");
-        }
+		if (!status.equals("PLACED")
+				&& !status.equals("CONFIRMED")
+				&& !status.equals("SHIPPED")
+				&& !status.equals("DELIVERED")
+				&& !status.equals("CANCELLED")) {
 
-        if (order.getStatus().equalsIgnoreCase("CANCELLED")) {
-            throw new IllegalStateException(
-                    "Order is already cancelled.");
-        }
+			throw new IllegalArgumentException("Invalid Order Status.");
+		}
 
-        // Step 6 : Cancel Order
-        return orderDao.cancelOrder(orderId, userId);
-    }
+		// Step 3 : Check Order Exists
+		Order order = orderDao.getOrderById(orderId);
+
+		if (order == null) {
+			throw new OrderNotFoundException(
+					"Order not found with ID : " + orderId);
+		}
+
+		// Step 4 : Update Status
+		return orderDao.updateOrderStatus(orderId, status);
+	}
+
+	@Override
+	public boolean cancelOrder(long orderId, long userId) {
+
+		// Step 1 : Validate Order ID
+		if (orderId <= 0) {
+			throw new IllegalArgumentException("Invalid Order ID.");
+		}
+
+		// Step 2 : Validate User ID
+		if (userId <= 0) {
+			throw new IllegalArgumentException("Invalid User ID.");
+		}
+
+		// Step 3 : Check Order Exists
+		Order order = orderDao.getOrderById(orderId);
+
+		if (order == null) {
+			throw new OrderNotFoundException(
+					"Order not found with ID : " + orderId);
+		}
+
+		// Step 4 : Verify Order Owner
+		if (order.getUserId() != userId) {
+			throw new IllegalArgumentException(
+					"You are not authorized to cancel this order.");
+		}
+
+		// Step 5 : Validate Status
+		if (order.getStatus().equalsIgnoreCase("DELIVERED")) {
+			throw new IllegalStateException(
+					"Delivered orders cannot be cancelled.");
+		}
+
+		if (order.getStatus().equalsIgnoreCase("CANCELLED")) {
+			throw new IllegalStateException(
+					"Order is already cancelled.");
+		}
+
+		// Step 6 : Cancel Order
+		return orderDao.cancelOrder(orderId, userId);
+	}
+	
+	@Override
+	public void viewOrderHistory( long userId) {
+		
+		orderDao.viewOrderHistoryDetails(userId);
+		
+		
+	}
 
 }

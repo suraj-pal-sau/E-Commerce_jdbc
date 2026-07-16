@@ -34,8 +34,9 @@ public class ConsoleMenu {
 
         while (true) {
             System.out.println("\n======================================");
-            System.out.println("  E-COMMERCE MAIN MENU (User ID: " + seller.getSellerId() + ")");
-            System.out.println("======================================");
+            System.out.println("  E-COMMERCE MAIN MENU (" + 
+            	    ("customer".equals(seller.getRole()) ? "User ID: " : "Seller ID: ") 
+            	    + seller.getSellerId() + ")");            System.out.println("======================================");
             System.out.println("1. Product Management");
             System.out.println("2. Cart System");
             System.out.println("3. Order & Inventory Management");

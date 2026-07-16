@@ -8,20 +8,19 @@ public class Seller {
 	private String name;
 	private String email;
 	private String password;
-	private String phone;
-	private String shopName;
-	private String address;
+	private String role;
 	
 	public Seller() {
 		
 	}
 
-	public Seller(int sellerId, String name, String email, String password) {
+	public Seller(int sellerId, String name, String email, String password, String role) {
 
 		this.sellerId = sellerId;
 		this.name = name;
 		this.email = email;
 		this.password = password;
+		this.role = role;
 	}
 
 	public int getSellerId() {
@@ -40,24 +39,17 @@ public class Seller {
 		return password;
 	}
 
-	public String getPhone() {
-		return phone;
+	public String getRole() {
+		return role;
 	}
 
-	public String getShopName() {
-		return shopName;
-	}
-
-	public String getAddress() {
-		return address;
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 	@Override
 	public String toString() {
 		return "Seller [sellerId=" + sellerId + ", name=" + name + ", email=" + email + ", password=" + password
-				+ ", phone=" + phone + ", shopName=" + shopName + ", address=" + address + "]";
+				+ ", role=" + role + "]";
 	}
-	
-	
-
 }

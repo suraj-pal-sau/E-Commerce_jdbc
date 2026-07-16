@@ -19,4 +19,5 @@ public interface OrderService {
 
     boolean cancelOrder(long orderId, long userId);
 
+    public void viewOrderHistory( long userId);
 }

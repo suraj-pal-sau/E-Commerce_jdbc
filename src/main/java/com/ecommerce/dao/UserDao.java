@@ -46,8 +46,9 @@ public class UserDao {
 	        	String username = result.getString(2);
 	        	String email1 = result.getString(3);
 	        	String password1 = result.getString(4);
+	        	String role = result.getString(6);
 	        	
-	        	Seller seller = new Seller(user_id, username, email1, password1);
+	        	Seller seller = new Seller(user_id, username, email1, password1, role);
 	        	
 	        	return seller;
 	        }

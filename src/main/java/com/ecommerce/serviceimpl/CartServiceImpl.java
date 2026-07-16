@@ -14,11 +14,21 @@ public class CartServiceImpl implements CartService
 
 	@Override
 	public void addProductToCart(int customer_id, int product_id, int quantity) {
-		cartDaoImpl.addProductIntoCartDB(customer_id, product_id, quantity);
+		
+		// check product already exist or not 
+		boolean isProductExist = cartDaoImpl.findProductFromCart(customer_id, product_id);
+		
+		if (isProductExist) {
+			cartDaoImpl.updateExistingCartProduct(customer_id, product_id, quantity);
+		}
+		else {
+			cartDaoImpl.addProductIntoCartDB(customer_id, product_id, quantity);			
+		}
 	}
 
 	@Override
 	public void removeProductToCart(int customer_id, int product_id) {
+		
 		cartDaoImpl.removeProductFromCartDB(customer_id, product_id);
 	}
 

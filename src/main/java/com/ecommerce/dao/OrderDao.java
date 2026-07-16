@@ -28,4 +28,5 @@ public interface OrderDao {
     // Cancel order
     boolean cancelOrder(long orderId, long userId);
 
+    public void viewOrderHistoryDetails(long userId);
 }

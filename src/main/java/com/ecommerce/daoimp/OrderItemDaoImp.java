@@ -17,13 +17,6 @@ import com.ecommerce.model.OrderItem;
 public class OrderItemDaoImp implements OrderItemDao
 {
 
-//    private Connection connection;
-
-//    public OrderItemDaoImp()
-//    {
-//        connection = DBconfig.getConnection();
-//    }
-
     @Override
     public boolean addOrderItems(List<OrderItem> orderItems)
     {
