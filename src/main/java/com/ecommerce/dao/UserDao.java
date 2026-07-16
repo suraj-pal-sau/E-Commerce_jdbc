@@ -12,9 +12,9 @@ public class UserDao {
 	public boolean signUp(String username, String email, String password, String role) {
 		String query = CustomerQueries.USER_SIGNUP_QUERY;
         
-		try (Connection connection = DBconfig.getConnection();
-				PreparedStatement pstmt = connection.prepareStatement(query)) {
-
+		try  {
+			Connection connection = DBconfig.getConnection();
+			PreparedStatement pstmt = connection.prepareStatement(query);
 			pstmt.setString(1, username);
 			pstmt.setString(2, email);
 			pstmt.setString(3, password);
